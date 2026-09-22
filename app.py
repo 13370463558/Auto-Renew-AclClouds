@@ -18,7 +18,7 @@ TG_CHAT_ID = os.getenv('TG_CHAT_ID') or ""
 TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN') or ""
 
 LOGIN_PATH = '/auth/login'
-BASE_URL = 'https://dash.aclclouds.com'
+BASE_URL = 'https://aclclouds.com'
 PROJECTS_URL = f'{BASE_URL}/dashboard/projects'
 
 def beijing_time_str():
@@ -53,7 +53,9 @@ def is_login_page(sb):
 
 def is_logged_in(sb):
     current_url = sb.get_current_url()
-    return BASE_URL in current_url and LOGIN_PATH not in current_url
+    # aclclouds.com 登录后可能跳转到语言前缀路径(如 /fr/, /en/)
+    # 只要域名对且不在登录页, 就视为已登录
+    return 'aclclouds.com' in current_url and LOGIN_PATH not in current_url
 
 def scroll_to_selector(sb, selector):
     sb.scroll_to(selector)
