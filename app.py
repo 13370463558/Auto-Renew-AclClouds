@@ -915,6 +915,20 @@ def main():
         sb.wait_for_ready_state_complete()
         time.sleep(3)
 
+        # 如果被踢回登录页, 说明 cookie/session 过期, 重新登录后再进
+        if is_login_page(sb):
+            print('⚠️ 访问项目页被重定向到登录页, cookie 可能已过期, 尝试重新登录...')
+            if not EMAIL or not PASSWORD:
+                print('❌ 未配置 ACL_EMAIL 或 ACL_PASSWORD，无法重新登录。')
+                send_telegram('⚠️ cookie 过期且未配置账密, 无法续期。')
+                return
+            if not login(sb, EMAIL, PASSWORD):
+                return
+            sb.open(PROJECTS_URL)
+            sb.wait_for_ready_state_complete()
+            time.sleep(3)
+            print(f'🔄 重新登录后项目页 URL: {sb.get_current_url()}, 标题: {sb.get_title()}')
+
         # 3. 定位卡片
         cards = find_project_cards(sb)
 
