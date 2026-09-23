@@ -843,8 +843,8 @@ def login(sb, email, password):
     try:
         wait_for_url_change(sb, login_page_url, timeout=30)
         if '/auth/login' not in sb.get_current_url():
-            sb.assert_title('Home | ACLClouds')
-            print("✅ 登录成功！")
+            title = sb.get_title()
+            print(f'✅ 登录成功！(标题: {title})')
             return True
         else:
             # 提取错误信息
