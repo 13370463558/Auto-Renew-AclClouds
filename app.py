@@ -322,6 +322,10 @@ def get_project_expiry(card):
         './/*[contains(translate(normalize-space(.), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "expire")]',
         './/*[contains(translate(normalize-space(.), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "valid")]',
         './/*[contains(normalize-space(.), "过期") or contains(normalize-space(.), "到期")]',
+        # 法语关键词: expiration, expire le, échéance, valable jusqu
+        './/*[contains(translate(normalize-space(.), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "expir")]',
+        './/*[contains(translate(normalize-space(.), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "\u00e9ch\u00e9ance")]',
+        './/*[contains(translate(normalize-space(.), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"), "valable")]',
     ]
     for selector in selectors:
         try:
@@ -339,7 +343,18 @@ def get_project_expiry(card):
             continue
 
     card_text = element_text(card)
-    return extract_date_like(card_text) or extract_duration_like(card_text) or '未知'
+    date_found = extract_date_like(card_text) or extract_duration_like(card_text)
+    if date_found:
+        return date_found
+    # 最后尝试: 用正则从卡片文本中找日期格式的字符串
+    import re as _re
+    m = _re.search(r'\d{4}[-/]\d{1,2}[-/]\d{1,2}(?:[T ]\d{1,2}:\d{2}(?::\d{2})?)?', card_text)
+    if m:
+        return m.group(0).strip()
+    m = _re.search(r'\d{1,2}[-/]\d{1,2}[-/]\d{2,4}', card_text)
+    if m:
+        return m.group(0).strip()
+    return '未知'
 
 def get_renewal_available_note(card):
     text = element_text(card)
