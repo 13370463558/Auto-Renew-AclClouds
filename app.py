@@ -17,7 +17,7 @@ PASSWORD = os.getenv('PASSWORD') or ""   # 密码必填
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID") or ""  # CHAT_ID 可选
 TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN") or "" # BOT_TOKEN 可选，需同时填写CHAT_ID生效
 
-LOGIN_PATH = '/auth/login'
+LOGIN_PATH = 'auth/login?return_to=/en%2F%23univers'
 LOGIN_URL = f'https://aclclouds.com{LOGIN_PATH}'
 BASE_URL = 'https://dash.aclclouds.com'
 PROJECTS_URL = f'{BASE_URL}/dashboard/projects'
